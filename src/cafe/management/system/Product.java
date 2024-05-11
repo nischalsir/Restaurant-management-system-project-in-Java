@@ -368,8 +368,8 @@ public class Product extends javax.swing.JFrame {
 
         jLabel20.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 24)); // NOI18N
         jLabel20.setForeground(new java.awt.Color(102, 204, 0));
-        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/trend.png"))); // NOI18N
-        jLabel20.setText("Sales");
+        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/software-engineer.png"))); // NOI18N
+        jLabel20.setText("Admin");
         jLabel20.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel20MouseClicked(evt);

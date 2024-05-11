@@ -655,7 +655,7 @@ public class Product extends javax.swing.JFrame {
 
     private void jLabel20MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel20MouseClicked
         // TODO add your handling code here:
-        SalesPage dash = new SalesPage();
+        AdminPage dash = new AdminPage();
         dash.setVisible(true);  // use setVisible(true) instead of show()
         this.setVisible(false);
     }//GEN-LAST:event_jLabel20MouseClicked

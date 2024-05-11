@@ -273,7 +273,7 @@ public class Login extends javax.swing.JFrame {
             this.dispose();
 
             // Redirect to sales page for admin
-            SalesPage salesPage = new SalesPage();
+            AdminPage salesPage = new AdminPage();
             salesPage.setVisible(true);
 
             this.setVisible(false);

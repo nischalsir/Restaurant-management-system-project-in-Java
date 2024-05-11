@@ -572,11 +572,11 @@
                     <StringItem index="1" value="Burger"/>
                     <StringItem index="2" value="Chicken Roll"/>
                     <StringItem index="3" value="Rice Meals"/>
-                    <StringItem index="4" value="Snacks"/>
-                    <StringItem index="5" value="Beverage"/>
-                    <StringItem index="6" value="Fries"/>
-                    <StringItem index="7" value="Desserts"/>
-                    <StringItem index="8" value="Krushers"/>
+                    <StringItem index="4" value="Beverage"/>
+                    <StringItem index="5" value="Fries"/>
+                    <StringItem index="6" value="Desserts"/>
+                    <StringItem index="7" value="Soft Cocktail"/>
+                    <StringItem index="8" value="Milkshake"/>
                   </StringArray>
                 </Property>
               </Properties>

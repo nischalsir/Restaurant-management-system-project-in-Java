@@ -275,7 +275,7 @@ public class Product extends javax.swing.JFrame {
         jLabel12.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jLabel12.setText("Categories");
 
-        category.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select an option", "Burger", "Chicken Roll", "Rice Meals", "Snacks", "Beverage", "Fries", "Desserts", "Krushers" }));
+        category.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select an option", "Burger", "Chicken Roll", "Rice Meals", "Beverage", "Fries", "Desserts", "Soft Cocktail", "Milkshake" }));
         category.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 categoryActionPerformed(evt);
@@ -661,8 +661,11 @@ public class Product extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel20MouseClicked
 
     private void uploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadActionPerformed
-        // TODO add your handling code here:
-        JFileChooser chooser = new JFileChooser();
+    // Specify the initial directory
+        String initialDirectory = "C:\\Users\\nisch\\OneDrive\\Desktop\\Resturant management system Slide and word\\Product Image";
+
+        // Create the file chooser with the initial directory
+        JFileChooser chooser = new JFileChooser(initialDirectory);
         int result = chooser.showOpenDialog(null);
 
         if (result == JFileChooser.APPROVE_OPTION) {

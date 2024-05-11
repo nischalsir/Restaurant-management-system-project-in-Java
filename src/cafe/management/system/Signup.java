@@ -390,7 +390,7 @@ public class Signup extends javax.swing.JFrame {
     String username = this.username.getText();
     String phone = this.phone.getText();
     String password = new String(this.password.getPassword());
-    String address = this.address.getSelectedText();
+    String address = this.address.getText();
 
     try {
         Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");
@@ -403,7 +403,7 @@ public class Signup extends javax.swing.JFrame {
         preparedStatement.setString(3, username);
         preparedStatement.setString(4, phone);
         preparedStatement.setString(5, password);
-        preparedStatement.setString(5, address);
+        preparedStatement.setString(6, address);
 
         preparedStatement.executeUpdate();
 

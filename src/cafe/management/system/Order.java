@@ -735,6 +735,7 @@ public Order() {
     }//GEN-LAST:event_jLabel15MouseClicked
 
     private void cashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cashActionPerformed
+    try{
     // Get the cash input from the cashIn TextField
     double cashInput = Double.parseDouble(cashIn.getText());
    
@@ -762,7 +763,28 @@ public Order() {
     headerBuilder.append("Thank you for your visit.");
 
     // Update the bill TextArea with the modified header
+    
     bill.setText(headerBuilder.toString());
+    
+    // Now, save totalItem and totalPrice to the bill table
+    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");
+    String query = "INSERT INTO bill (net, total) VALUES (?, ?)";
+    PreparedStatement preparedStatement = connection.prepareStatement(query);
+    preparedStatement.setFloat(1, Float.parseFloat(totalPrice.getText())); // Parse as double
+    preparedStatement.setInt(2, Integer.parseInt(totalItem.getText()));
+    preparedStatement.executeUpdate();
+
+
+        // Close resources
+        preparedStatement.close();
+        connection.close();
+
+        JOptionPane.showMessageDialog(this, "Transaction completed!");
+
+    } catch (SQLException | NumberFormatException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error processing transaction: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_cashActionPerformed
 
     private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed

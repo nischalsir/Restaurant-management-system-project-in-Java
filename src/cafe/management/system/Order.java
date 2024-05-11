@@ -4,12 +4,18 @@
  */
 package cafe.management.system;
 
-import java.awt.BorderLayout;
+import java.awt.AWTException;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
@@ -19,7 +25,6 @@ import javax.swing.event.ListSelectionListener;
 import java.util.Random;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.Locale;
 /**
  *
@@ -235,7 +240,7 @@ public Order() {
     // Generate a randomly generated bill number
     Random random = new Random();
     int billNumber = random.nextInt(10000);
-    String billNo= "Bill.No # \n" + String.format("%04d", billNumber);
+    String billNo= "Bill.No #" + String.format("%04d\n", billNumber);
     //current date and time
     LocalDateTime currentDateAndTime = LocalDateTime.now();    
     // Format date and time
@@ -243,7 +248,6 @@ public Order() {
     // Add dashed line separator
     String dash= "----------------------------------------------------------------------\n";
     String details= "Item                                    Qty         Rate        Amount\n";
-    String totalItem= "Total Items: \n";
 
     bill.setText(
         companyName +
@@ -255,30 +259,9 @@ public Order() {
         billNo +
         DateAndTime +
         dash +
-        details +
-        dash +
-        dash +
-        totalItem        
+        details +        
+        dash        
     );
-    
-    headerBuilder.append(product_id.getText());
-    headerBuilder.append("      ").append(currentItem.getText()); 
-    headerBuilder.append("      ").append(price.getText());
-    headerBuilder.append("      ").append(currentPrice.getText()).append("\n");
-    //Bottom dashed line separator
-    headerBuilder.append("----------------------------------------------------------------------\n");
-    
-    headerBuilder.append("Total Items: ").append(totalItem.getText()).append("\n");
-    headerBuilder.append("----------------------------------------------------------------------\n\n");
-    //Bottom dashed line separator
-    headerBuilder.append("                                           ------------------------------------\n");
-    headerBuilder.append("                                           Net Amount  : ").append(totalPrice.getText()).append("\n");
-    headerBuilder.append("                                           Tender  :        ").append(cashIn.getText()).append("\n");
-    headerBuilder.append("                                           Change  :       ").append(change.getText()).append("\n");
-    headerBuilder.append("                                           -----------------------------------\n\n");
-    headerBuilder.append("Telephone : +977 01 1234567\n");
-    headerBuilder.append("Thank you for your visit.");
-
     }
     @SuppressWarnings("unchecked") 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -308,9 +291,9 @@ public Order() {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         totalPrice = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        cash = new javax.swing.JButton();
+        next = new javax.swing.JButton();
+        print = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         cashIn = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
@@ -322,6 +305,7 @@ public Order() {
         jLabel14 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         bill = new javax.swing.JTextArea();
+        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -429,31 +413,36 @@ public Order() {
 
         totalPrice.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
-        jButton1.setBackground(new java.awt.Color(133, 187, 101));
-        jButton1.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Cash");
-        jButton1.setMaximumSize(new java.awt.Dimension(75, 25));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        cash.setBackground(new java.awt.Color(133, 187, 101));
+        cash.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        cash.setForeground(new java.awt.Color(255, 255, 255));
+        cash.setText("Cash");
+        cash.setMaximumSize(new java.awt.Dimension(75, 25));
+        cash.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                cashActionPerformed(evt);
             }
         });
 
-        jButton3.setBackground(new java.awt.Color(0, 153, 255));
-        jButton3.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Scan");
-        jButton3.setMaximumSize(new java.awt.Dimension(75, 25));
-
-        jButton2.setBackground(new java.awt.Color(255, 0, 51));
-        jButton2.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Print Bill");
-        jButton2.setMaximumSize(new java.awt.Dimension(75, 25));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        next.setBackground(new java.awt.Color(0, 153, 255));
+        next.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        next.setForeground(new java.awt.Color(255, 255, 255));
+        next.setText("Next Order");
+        next.setMaximumSize(new java.awt.Dimension(75, 25));
+        next.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                nextActionPerformed(evt);
+            }
+        });
+
+        print.setBackground(new java.awt.Color(255, 0, 51));
+        print.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        print.setForeground(new java.awt.Color(255, 255, 255));
+        print.setText("Print Bill");
+        print.setMaximumSize(new java.awt.Dimension(75, 25));
+        print.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printActionPerformed(evt);
             }
         });
 
@@ -475,11 +464,11 @@ public Order() {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cash, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(next, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(print, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jLabel1))
@@ -572,9 +561,9 @@ public Order() {
                     .addComponent(change, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(13, 13, 13)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cash, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(next, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(print, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -674,28 +663,40 @@ public Order() {
                 .addContainerGap())
         );
 
+        jLabel12.setFont(new java.awt.Font("Dubai Medium", 0, 14)); // NOI18N
+        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/enter.png"))); // NOI18N
+        jLabel12.setText(" Log Out");
+        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel12MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel10)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(832, 832, 832)
+                        .addComponent(jLabel12))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 16, Short.MAX_VALUE))))
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 11, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel10))
+                .addGap(3, 3, 3)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -733,7 +734,7 @@ public Order() {
         // TODO add your handling code here:
     }//GEN-LAST:event_jLabel15MouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void cashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cashActionPerformed
     // Get the cash input from the cashIn TextField
     double cashInput = Double.parseDouble(cashIn.getText());
    
@@ -745,10 +746,24 @@ public Order() {
 
     // Display the change in the change TextField
     change.setText(Double.toString(changeF));
+    
+        // Append additional details to the bill header
+    StringBuilder headerBuilder = new StringBuilder(bill.getText());
+    headerBuilder.append("----------------------------------------------------------------------\n");
+    headerBuilder.append("Total Items: ").append(totalItem.getText()).append("\n");
+    headerBuilder.append("----------------------------------------------------------------------\n\n");
+    //Bottom dashed line separator
+    headerBuilder.append("                                           -----------------------------------\n");
+    headerBuilder.append("                                           Net Amount  : ").append(totalPrice.getText()).append("\n");
+    headerBuilder.append("                                           Tender  :        ").append(cashIn.getText()).append("\n");
+    headerBuilder.append("                                           Change  :       ").append(changeF).append("\n");
+    headerBuilder.append("                                           ----------------------------------\n\n");
+    headerBuilder.append("Telephone : +977 01 1234567\n");
+    headerBuilder.append("Thank you for your visit.");
 
-    // Call billHeader to update the bill with the latest values
-    billHeader();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    // Update the bill TextArea with the modified header
+    bill.setText(headerBuilder.toString());
+    }//GEN-LAST:event_cashActionPerformed
 
     private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
     // Get the selected product name
@@ -788,14 +803,66 @@ public Order() {
         // If the totalPrice TextField is empty or not a valid double, set updatedTotalPrice to currentPriceValue
         updatedTotalPrice = currentPriceValue;
     }
-    totalPrice.setText(Double.toString(updatedTotalPrice));
-      
-    billHeader();
+    totalPrice.setText(Double.toString(updatedTotalPrice));  
+    
+    // Construct the text to display in the bill
+    String billText = String.format("%-30s%-10s%-10s%-10s\n", product_id.getText(), currentItem.getText(), price.getText(), currentPrice.getText());
+    
+    // Append the bill text to the existing bill content
+    String currentBillContent = bill.getText();
+    bill.setText(currentBillContent + billText);
     }//GEN-LAST:event_addActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void printActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printActionPerformed
+    // Get the bounds of the bill TextArea
+    Rectangle bounds = bill.getBounds();
+    
+    // Create a BufferedImage with the same size as the bill TextArea
+    BufferedImage billImage = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_RGB);
+    
+    // Create a graphics context from the BufferedImage
+    bill.paint(billImage.getGraphics());
+    
+    // Define the directory where the bill images will be saved
+    String directoryPath = "C:\\Users\\nisch\\OneDrive\\Desktop\\Resturant management system Slide and word\\Bill";
+    
+    // Create the directory if it doesn't exist
+    File directory = new File(directoryPath);
+    if (!directory.exists()) {
+        directory.mkdirs();
+    }
+    
+    // Generate a unique filename using the current timestamp
+    String timestamp = Long.toString(System.currentTimeMillis());
+    String fileName = "bill_" + timestamp + ".png";
+    
+    // Combine directory path and file name
+    String filePath = directoryPath + "\\" + fileName;
+    
+    // Save the image to file
+    try {
+        ImageIO.write(billImage, "png", new File(filePath));
+        
+        // Show success message
+        JOptionPane.showMessageDialog(this, "Bill saved successfully!");
+    } catch (IOException ex) {
+        // Show error message if failed to save
+        JOptionPane.showMessageDialog(this, "Failed to save the bill: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_printActionPerformed
+
+    private void nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextActionPerformed
+        Order dash = new Order();
+        dash.setVisible(true);  // use setVisible(true) instead of show()
+        this.setVisible(false);
+    }//GEN-LAST:event_nextActionPerformed
+
+    private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        Login dash = new Login();
+        dash.setVisible(true);  // use setVisible(true) instead of show()
+        this.setVisible(false);
+    }//GEN-LAST:event_jLabel12MouseClicked
 
     /**
      * @param args the command line arguments
@@ -811,18 +878,17 @@ public Order() {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton add;
     private javax.swing.JTextArea bill;
+    private javax.swing.JButton cash;
     private javax.swing.JTextField cashIn;
     private javax.swing.JTextField change;
     private javax.swing.JTextField currentItem;
     private javax.swing.JTextField currentPrice;
     private javax.swing.JTextPane description;
     private javax.swing.JLabel image;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
@@ -842,7 +908,9 @@ public Order() {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JButton next;
     private javax.swing.JLabel price;
+    private javax.swing.JButton print;
     private javax.swing.JLabel product_id;
     private javax.swing.JTable product_table;
     private javax.swing.JTextField totalItem;

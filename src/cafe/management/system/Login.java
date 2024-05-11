@@ -259,57 +259,59 @@ public class Login extends javax.swing.JFrame {
     String adminUsername = "admin";
     String adminPassword = "admin";
 
-    try {
-        if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter both username and password");
-            return;
-        }
-
+    if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter both username and password");
+        return;
+    }
+    String selectedRole = (String) role.getSelectedItem();
+    if ("Admin".equals(selectedRole)) {
         if (adminUsername.equals(enteredUsername) && adminPassword.equals(enteredPassword)) {
             // Successful login as admin
             JOptionPane.showMessageDialog(this, "Login successful!");
-
+            
             // Close the current login frame if needed
             this.dispose();
-
+            
             // Redirect to sales page for admin
             AdminPage salesPage = new AdminPage();
             salesPage.setVisible(true);
-
+            
             this.setVisible(false);
         } else {
-            // Check in the database for employee login
-            try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");) {
-                String query = "SELECT * FROM usertable WHERE username = ? AND password = ?";
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setString(1, enteredUsername);
-                    preparedStatement.setString(2, enteredPassword);
-
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        if (resultSet.next()) {
-                            // Successful login as employee
-                            JOptionPane.showMessageDialog(this, "Login successful!");
-
-                            // Close the current login frame if needed
-                            this.dispose();
-
-                            // Redirect to employee dashboard
-                            Order dash = new Order();
-                            dash.setVisible(true);
-
-                            this.setVisible(false);
-                        } else {
-                            // Invalid credentials
-                            JOptionPane.showMessageDialog(this, "Invalid username or password");
-                        }
+            // Invalid admin credentials
+            JOptionPane.showMessageDialog(this, "Invalid admin username or password");
+        }
+    } else {
+        // Check in the database for employee login
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");) {
+            String query = "SELECT * FROM usertable WHERE username = ? AND password = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, enteredUsername);
+                preparedStatement.setString(2, enteredPassword);
+                
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        // Successful login as employee
+                        JOptionPane.showMessageDialog(this, "Login successful!");
+                        
+                        // Close the current login frame if needed
+                        this.dispose();
+                        
+                        // Redirect to employee dashboard
+                        Order dash = new Order();
+                        dash.setVisible(true);
+                        
+                        this.setVisible(false);
+                    } else {
+                        // Invalid credentials
+                        JOptionPane.showMessageDialog(this, "Invalid employee username or password");
                     }
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error connecting to the database");
         }
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error connecting to the database");
     }
     }//GEN-LAST:event_logInActionPerformed
 

@@ -662,37 +662,37 @@ public class Product extends javax.swing.JFrame {
 
     private void uploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadActionPerformed
         // TODO add your handling code here:
-    JFileChooser chooser = new JFileChooser();
-    int result = chooser.showOpenDialog(null);
-    
-    if (result == JFileChooser.APPROVE_OPTION) {
-        File selectedFile = chooser.getSelectedFile();
-        if (selectedFile != null) {
-            selectedFilePath = selectedFile.getAbsolutePath();
-            try {
-                BufferedImage bufferedImage = ImageIO.read(selectedFile);
-                if (bufferedImage != null) {
-                    Image scaledImage = bufferedImage.getScaledInstance(220, 220, Image.SCALE_SMOOTH);
-                    ImageIcon icon = new ImageIcon(scaledImage);
-                    image_path.setIcon(icon);
-                } else {
-                    // Handle the case where the selected file is not an image
-                    System.err.println("Selected file is not a valid image.");
+        JFileChooser chooser = new JFileChooser();
+        int result = chooser.showOpenDialog(null);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = chooser.getSelectedFile();
+            if (selectedFile != null) {
+                selectedFilePath = selectedFile.getAbsolutePath();
+                try {
+                    BufferedImage bufferedImage = ImageIO.read(selectedFile);
+                    if (bufferedImage != null) {
+                        Image scaledImage = bufferedImage.getScaledInstance(220, 220, Image.SCALE_SMOOTH);
+                        ImageIcon icon = new ImageIcon(scaledImage);
+                        image_path.setIcon(icon);
+                    } else {
+                        // Handle the case where the selected file is not an image
+                        System.err.println("Selected file is not a valid image.");
+                    }
+                } catch (IOException ex) {
+                    // Handle the case where an error occurs during file reading
+                    Logger.getLogger(Product.class.getName()).log(Level.SEVERE, "Error reading image file", ex);
+                    // Provide user feedback about the error
+                    JOptionPane.showMessageDialog(null, "Error reading image file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (IOException ex) {
-                // Handle the case where an error occurs during file reading
-                Logger.getLogger(Product.class.getName()).log(Level.SEVERE, "Error reading image file", ex);
-                // Provide user feedback about the error
-                JOptionPane.showMessageDialog(null, "Error reading image file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Handle the case where no file is selected
+                System.err.println("No file selected.");
             }
         } else {
-            // Handle the case where no file is selected
-            System.err.println("No file selected.");
+            // Handle the case where the user cancels file selection
+            System.out.println("File selection cancelled by user.");
         }
-    } else {
-        // Handle the case where the user cancels file selection
-        System.out.println("File selection cancelled by user.");
-    }
     }//GEN-LAST:event_uploadActionPerformed
 
     /**

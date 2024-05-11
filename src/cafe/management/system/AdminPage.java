@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.table.DefaultTableModel;
 
 public class AdminPage extends javax.swing.JFrame {
 
@@ -18,87 +19,170 @@ public class AdminPage extends javax.swing.JFrame {
     public AdminPage() {
         initComponents();
         salesData();
+        UserTable();
+        ProductTable();
     }
 
     // Method to fetch and display the last sale value from the database
     private void salesData() {
-    try {
-        // Establish connection to the database
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");
+        try {
+            // Establish connection to the database
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");
 
-        // Prepare a SQL statement to retrieve the total sale
-        String totalSaleQuery = "SELECT SUM(net) AS totalSale FROM bill";
-        
-        // Prepare statement for the total sale query
-        PreparedStatement totalSaleStatement = connection.prepareStatement(totalSaleQuery);
+            // Prepare a SQL statement to retrieve the total sale
+            String totalSaleQuery = "SELECT SUM(net) AS totalSale FROM bill";
 
-        // Execute the total sale query
-        ResultSet totalSaleResult = totalSaleStatement.executeQuery();
+            // Prepare statement for the total sale query
+            PreparedStatement totalSaleStatement = connection.prepareStatement(totalSaleQuery);
 
-        // Update total sale
-        if (totalSaleResult.next()) {
-            double totalSaleValue = totalSaleResult.getDouble("totalSale");
-            totalSale.setText(String.valueOf(totalSaleValue)); // Assuming totalSale is a JLabel declared earlier
-        } else {
-            // Handle case where no data is found
-            System.out.println("No data found for total sale.");
+            // Execute the total sale query
+            ResultSet totalSaleResult = totalSaleStatement.executeQuery();
+
+            // Update total sale
+            if (totalSaleResult.next()) {
+                double totalSaleValue = totalSaleResult.getDouble("totalSale");
+                int totalSaleIntValue = (int) totalSaleValue; // Cast to int
+                totalSale.setText(String.valueOf(totalSaleIntValue)); // Assuming totalSale is a JLabel declared earlier
+            } else {
+                // Handle case where no data is found
+                System.out.println("No data found for total sale.");
+            }
+
+            // Close the total sale resources
+            totalSaleResult.close();
+            totalSaleStatement.close();
+
+            // Prepare a SQL statement to retrieve the last sale
+            String lastSaleQuery = "SELECT net FROM bill ORDER BY id DESC LIMIT 1";
+
+            // Prepare statement for the last sale query
+            PreparedStatement lastSaleStatement = connection.prepareStatement(lastSaleQuery);
+
+            // Execute the last sale query
+            ResultSet lastSaleResult = lastSaleStatement.executeQuery();
+
+            // Update last sale
+            if (lastSaleResult.next()) {
+                double lastSaleValue = lastSaleResult.getDouble("net");
+                int lastSaleIntValue = (int) lastSaleValue; // Cast to int
+                lastSale.setText(String.valueOf(lastSaleIntValue)); // Assuming lastSale is a JLabel declared earlier
+            } else {
+                // Handle case where no data is found
+                System.out.println("No data found for last sale.");
+            }
+
+            // Close the last sale resources
+            lastSaleResult.close();
+            lastSaleStatement.close();
+
+            // Prepare a SQL statement to retrieve the total order
+            String totalOrderQuery = "SELECT SUM(total) AS totalOrder FROM bill";
+
+            // Prepare statement for the total order query
+            PreparedStatement totalOrderStatement = connection.prepareStatement(totalOrderQuery);
+
+            // Execute the total order query
+            ResultSet totalOrderResult = totalOrderStatement.executeQuery();
+
+            // Update total order
+            if (totalOrderResult.next()) {
+                double totalOrderValue = totalOrderResult.getDouble("totalOrder");
+                int totalOrderIntValue = (int) totalOrderValue; // Cast to int
+                totalOrder.setText(String.valueOf(totalOrderIntValue)); // Assuming totalOrder is a JLabel declared earlier
+            } else {
+                // Handle case where no data is found
+                System.out.println("No data found for total order.");
+            }
+
+            // Close the total order resources
+            totalOrderResult.close();
+            totalOrderStatement.close();
+
+            // Close the connection
+            connection.close();
+        } catch (SQLException e) {
+            // Handle any SQL exceptions
+            e.printStackTrace();
         }
-
-        // Close the total sale resources
-        totalSaleResult.close();
-        totalSaleStatement.close();
-
-        // Prepare a SQL statement to retrieve the last sale
-        String lastSaleQuery = "SELECT net FROM bill ORDER BY id DESC LIMIT 1";
-        
-        // Prepare statement for the last sale query
-        PreparedStatement lastSaleStatement = connection.prepareStatement(lastSaleQuery);
-
-        // Execute the last sale query
-        ResultSet lastSaleResult = lastSaleStatement.executeQuery();
-
-        // Update last sale
-        if (lastSaleResult.next()) {
-            double lastSaleValue = lastSaleResult.getDouble("net");
-            lastSale.setText(String.valueOf(lastSaleValue)); // Assuming lastSale is a JLabel declared earlier
-        } else {
-            // Handle case where no data is found
-            System.out.println("No data found for last sale.");
-        }
-
-        // Close the last sale resources
-        lastSaleResult.close();
-        lastSaleStatement.close();
-
-        // Prepare a SQL statement to retrieve the total order
-        String totalOrderQuery = "SELECT SUM(total) AS totalOrder FROM bill";
-        
-        // Prepare statement for the total order query
-        PreparedStatement totalOrderStatement = connection.prepareStatement(totalOrderQuery);
-
-        // Execute the total order query
-        ResultSet totalOrderResult = totalOrderStatement.executeQuery();
-
-        // Update total order
-        if (totalOrderResult.next()) {
-            double totalOrderValue = totalOrderResult.getDouble("totalOrder");
-            totalOrder.setText(String.valueOf(totalOrderValue)); // Assuming totalOrder is a JLabel declared earlier
-        } else {
-            // Handle case where no data is found
-            System.out.println("No data found for total order.");
-        }
-
-        // Close the total order resources
-        totalOrderResult.close();
-        totalOrderStatement.close();
-
-        // Close the connection
-        connection.close();
-    } catch (SQLException e) {
-        // Handle any SQL exceptions
-        e.printStackTrace();
     }
+ 
+        private void UserTable() {
+        try {
+            // Establish connection to the database
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");
+
+            // Prepare a SQL statement to retrieve data from the usertable
+            String query = "SELECT name, address, phone FROM usertable";
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            // Execute the query
+            ResultSet resultSet = statement.executeQuery();
+
+            // Clear existing rows from the userTable JTable
+            DefaultTableModel model = (DefaultTableModel) userTable.getModel();
+            model.setRowCount(0);
+
+            // Iterate through the result set and populate the JTable
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String address = resultSet.getString("address");
+                String phone = resultSet.getString("phone");
+
+                model.addRow(new Object[]{name, address, phone});
+            }
+
+            // Close the resources
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            // Handle any SQL exceptions
+            e.printStackTrace();
+        }
     }
+        
+        private void ProductTable() {
+        try {
+            // Establish connection to the database
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");
+
+            // Prepare a SQL statement to retrieve data from the products table
+            String query = "SELECT product_id, product_name, price, category FROM products ORDER BY category";
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            // Execute the query
+            ResultSet resultSet = statement.executeQuery();
+
+            // Create a DefaultTableModel to store the data for the JTable
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Product ID");
+            model.addColumn("Product Name");
+            model.addColumn("Price");
+            model.addColumn("Category");
+
+            // Populate the model with the data from the ResultSet
+            while (resultSet.next()) {
+                String productId = resultSet.getString("product_id");
+                String productName = resultSet.getString("product_name");
+                double price = resultSet.getDouble("price");
+                String category = resultSet.getString("category");
+
+                model.addRow(new Object[]{productId, productName, price, category});
+            }
+
+            // Set the model to the JTable
+            productTable.setModel(model); // Assuming productTable is a JTable declared earlier
+
+            // Close the resources
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            // Handle any SQL exceptions
+            e.printStackTrace();
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -117,11 +201,12 @@ public class AdminPage extends javax.swing.JFrame {
         jLabel22 = new javax.swing.JLabel();
         manage = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        product = new javax.swing.JTable();
+        productTable = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        user = new javax.swing.JTable();
+        userTable = new javax.swing.JTable();
+        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -226,7 +311,7 @@ public class AdminPage extends javax.swing.JFrame {
             }
         });
 
-        product.setModel(new javax.swing.table.DefaultTableModel(
+        productTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -237,7 +322,7 @@ public class AdminPage extends javax.swing.JFrame {
                 "ID", "Name", "Price", "Category"
             }
         ));
-        jScrollPane3.setViewportView(product);
+        jScrollPane3.setViewportView(productTable);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -274,7 +359,7 @@ public class AdminPage extends javax.swing.JFrame {
         jLabel21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/team.png"))); // NOI18N
         jLabel21.setText("Users");
 
-        user.setModel(new javax.swing.table.DefaultTableModel(
+        userTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -285,7 +370,7 @@ public class AdminPage extends javax.swing.JFrame {
                 "Name", "Address", "Phone"
             }
         ));
-        jScrollPane2.setViewportView(user);
+        jScrollPane2.setViewportView(userTable);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -310,6 +395,15 @@ public class AdminPage extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jLabel12.setFont(new java.awt.Font("Dubai Medium", 0, 14)); // NOI18N
+        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Assets/enter.png"))); // NOI18N
+        jLabel12.setText(" Log Out");
+        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel12MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -322,15 +416,21 @@ public class AdminPage extends javax.swing.JFrame {
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel20))
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel20)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel12)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(7, 7, 7)
-                .addComponent(jLabel20)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel20))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -368,6 +468,13 @@ public class AdminPage extends javax.swing.JFrame {
         dash.setVisible(true);  // use setVisible(true) instead of show()
         this.setVisible(false);
     }//GEN-LAST:event_manageActionPerformed
+
+    private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
+        // TODO add your handling code here:
+        Login dash = new Login();
+        dash.setVisible(true);  // use setVisible(true) instead of show()
+        this.setVisible(false);
+    }//GEN-LAST:event_jLabel12MouseClicked
 
     /**
      * @param args the command line arguments
@@ -407,6 +514,7 @@ public class AdminPage extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
@@ -421,9 +529,9 @@ public class AdminPage extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lastSale;
     private javax.swing.JButton manage;
-    private javax.swing.JTable product;
+    private javax.swing.JTable productTable;
     private javax.swing.JLabel totalOrder;
     private javax.swing.JLabel totalSale;
-    private javax.swing.JTable user;
+    private javax.swing.JTable userTable;
     // End of variables declaration//GEN-END:variables
 }

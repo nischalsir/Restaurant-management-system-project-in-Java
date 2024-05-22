@@ -283,14 +283,27 @@ public class Login extends javax.swing.JFrame {
         }
     } else {
         // Check in the database for employee login
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "");) {
-            String query = "SELECT * FROM usertable WHERE username = ? AND password = ?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, enteredUsername);
-                preparedStatement.setString(2, enteredPassword);
-                
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rms", "root", "")) {
+            // Check if the username exists
+            String usernameQuery = "SELECT * FROM usertable WHERE username = ?";
+            try (PreparedStatement usernameStmt = connection.prepareStatement(usernameQuery)) {
+                usernameStmt.setString(1, enteredUsername);
+                try (ResultSet usernameResult = usernameStmt.executeQuery()) {
+                    if (!usernameResult.next()) {
+                        // Username doesn't exist
+                        JOptionPane.showMessageDialog(this, "Couldn't find your username!");
+                        return;
+                    }
+                }
+            }
+
+            // Check if the password matches
+            String passwordQuery = "SELECT * FROM usertable WHERE username = ? AND password = ?";
+            try (PreparedStatement passwordStmt = connection.prepareStatement(passwordQuery)) {
+                passwordStmt.setString(1, enteredUsername);
+                passwordStmt.setString(2, enteredPassword);
+                try (ResultSet passwordResult = passwordStmt.executeQuery()) {
+                    if (passwordResult.next()) {
                         // Successful login as employee
                         JOptionPane.showMessageDialog(this, "Login successful!");
                         
@@ -303,8 +316,8 @@ public class Login extends javax.swing.JFrame {
                         
                         this.setVisible(false);
                     } else {
-                        // Invalid credentials
-                        JOptionPane.showMessageDialog(this, "Invalid employee username or password");
+                        // Password is incorrect
+                        JOptionPane.showMessageDialog(this, "Wrong password");
                     }
                 }
             }
